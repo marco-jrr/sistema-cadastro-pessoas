@@ -18,7 +18,8 @@ public class SistemaCadastro {
                     2 - Listar Pessoas
                     3 - Excluir Pessoa
                     4 - Atualizar Pessoa
-                    5 - Sair""");
+                    5 - Buscar por Nome
+                    6 - Sair""");
 
             System.out.print("\nEscolha uma opção: ");
             int opcao = scanner.nextInt();
@@ -43,7 +44,7 @@ public class SistemaCadastro {
                     for (Pessoa pessoa : listaPessoas) {        //For-each: percorre cada Pessoa na lista.
                         System.out.println(pessoa.getId() +
                                 " - " + pessoa.getNome() +
-                                "(" + pessoa.getEmail() + ")");
+                                " (" + pessoa.getEmail() + ")");
                     }
                     break;
 
@@ -105,12 +106,33 @@ public class SistemaCadastro {
                     break;
 
                 case 5:
+                    System.out.print("\nDigite o nome (ou parte) da pessoa: ");
+                    String nomeFiltro = scanner.nextLine();
+                    List<Pessoa> pessoasFiltro = new ArrayList<>();
+
+                    for (Pessoa pessoa : listaPessoas) {
+                        if (pessoa.getNome().toLowerCase().contains(nomeFiltro.toLowerCase())) {
+                            pessoasFiltro.add(pessoa);
+                        }
+                    }
+
+                    if (pessoasFiltro.isEmpty()) {
+                        System.out.println("\nPessoa não encontrada.");
+                    } else {
+                        System.out.println("\nPessoa(s) encontrada(s):");
+                        for (Pessoa pessoaFiltro : pessoasFiltro) {
+                            System.out.println(pessoaFiltro.getId() + " - "
+                            + pessoaFiltro.getNome() + " (" + pessoaFiltro.getEmail() + ")");
+                        }
+                    }
+                    break;
+
+                case 6:
                     System.out.println("Saindo...");
                     return;
 
                 default:
                     System.out.println("Opção inválida.");
-
             }
         }
     }
