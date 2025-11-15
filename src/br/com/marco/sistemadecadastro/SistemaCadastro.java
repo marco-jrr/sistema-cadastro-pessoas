@@ -5,126 +5,37 @@ import java.util.List;
 import java.util.Scanner;
 
 public class SistemaCadastro {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        List<Pessoa> listaPessoas = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+    private static List<Pessoa> listaPessoas = new ArrayList<>();
+    private static int idPessoa;
 
-        int idPessoa = 1;
+    public static void main(String[] args) {
 
         while (true){
-            System.out.println("""
-                    \n======= SISTEMA DE CADASTRO =======
-                    1 - Cadastrar Pessoa
-                    2 - Listar Pessoas
-                    3 - Excluir Pessoa
-                    4 - Atualizar Pessoa
-                    5 - Buscar por Nome
-                    6 - Sair""");
-
+            menu();
             System.out.print("\nEscolha uma opção: ");
             int opcao = scanner.nextInt();
             scanner.nextLine();
 
             switch (opcao) {
                 case 1:
-                    System.out.print("\nEscreva o nome: ");
-                    String nome = scanner.nextLine();
-
-                    System.out.print("\nEscreva o email: ");
-                    String email = scanner.nextLine();
-
-                    Pessoa novaPessoa = new Pessoa(idPessoa, nome, email);
-                    listaPessoas.add(novaPessoa);
-                    System.out.println("Pessoa cadastrada com sucesso!");
-                    idPessoa++;
+                    cadastrarPessoa();
                     break;
 
                 case 2:
-                    System.out.println("\nLista de Pessoas:");
-                    for (Pessoa pessoa : listaPessoas) {        //For-each: percorre cada Pessoa na lista.
-                        System.out.println(pessoa.getId() +
-                                " - " + pessoa.getNome() +
-                                " (" + pessoa.getEmail() + ")");
-                    }
+                    listarPessoas();
                     break;
 
                 case 3:
-                    System.out.print("\nInforme o ID: ");
-                    int idExcluir = scanner.nextInt();
-
-                    Pessoa pessoaExcluida = null;               //Variável para guardar a referência da pessoa a ser excluída
-
-                   for (Pessoa pessoa : listaPessoas){          //Percorre a lista para encontrar a pessoa com o ID informado.
-                       if (pessoa.getId() == idExcluir){        //Se o id da pessoa corrente for igual ao idExcluir, encontramos o alvo.
-                           pessoaExcluida = pessoa;             //Guarda a referência da pessoa encontrada.
-                           break;
-                       }
-                   }
-
-                   if (pessoaExcluida != null) {                //Verifica se encontrou alguém com aquele id.
-                       listaPessoas.remove(pessoaExcluida);     //Se sim, remove essa instância da lista.
-                       System.out.println("Pessoa excluída com sucesso.");
-                   } else {
-                       System.out.println("ID não encontrado.");
-                   }
-                   break;
+                    removerPessoa();
+                    break;
 
                 case 4:
-                    System.out.println("Informe o ID: ");
-                    int idAtualizar = scanner.nextInt();
-                    scanner.nextLine();
-
-                    Pessoa pessoaUpdate = null;
-
-                    for (Pessoa pessoa : listaPessoas) {
-                        if (pessoa.getId() == idAtualizar) {
-                            pessoaUpdate = pessoa;
-                            break;
-                        }
-                    }
-
-                    if (pessoaUpdate != null) {
-                        System.out.print("\nNome Atual: "+pessoaUpdate.getNome());
-                        System.out.print("Email Atual: "+pessoaUpdate.getEmail());
-
-                        System.out.print("\nDigite o novo nome ou aperte (enter) para prosseguir com o mesmo: ");
-                        String nomeUpdate = scanner.nextLine();
-                        if (!nomeUpdate.isBlank()) {         // Só altera se a pessoa digitou algo
-                            pessoaUpdate.setNome(nomeUpdate);
-                        }
-
-                        System.out.println("\nDigite o novo email ou aperte (enter) para prosseguir com o mesmo: ");
-                        String emailUpdate = scanner.nextLine();
-                        if (!emailUpdate.isBlank()) {       //// Só altera se a pessoa digitou algo
-                            pessoaUpdate.setEmail(emailUpdate);
-                        }
-
-                        System.out.println("\nCadastro atualizado com sucesso.");
-                    } else {
-                        System.out.println("\nID não encontrado.");
-                    }
+                    atualizarPessoa();
                     break;
 
                 case 5:
-                    System.out.print("\nDigite o nome (ou parte) da pessoa: ");
-                    String nomeFiltro = scanner.nextLine();
-                    List<Pessoa> pessoasFiltro = new ArrayList<>();
-
-                    for (Pessoa pessoa : listaPessoas) {
-                        if (pessoa.getNome().toLowerCase().contains(nomeFiltro.toLowerCase())) {
-                            pessoasFiltro.add(pessoa);
-                        }
-                    }
-
-                    if (pessoasFiltro.isEmpty()) {
-                        System.out.println("\nPessoa não encontrada.");
-                    } else {
-                        System.out.println("\nPessoa(s) encontrada(s):");
-                        for (Pessoa pessoaFiltro : pessoasFiltro) {
-                            System.out.println(pessoaFiltro.getId() + " - "
-                            + pessoaFiltro.getNome() + " (" + pessoaFiltro.getEmail() + ")");
-                        }
-                    }
+                    buscarPessoaPorNome();
                     break;
 
                 case 6:
@@ -133,6 +44,120 @@ public class SistemaCadastro {
 
                 default:
                     System.out.println("Opção inválida.");
+            }
+        }
+    }
+
+
+    // ======================== MÉTODOS ===========================
+    private static void menu() {
+        System.out.println("""
+                    \n======= SISTEMA DE CADASTRO =======
+                    1 - Cadastrar Pessoa
+                    2 - Listar Pessoas
+                    3 - Excluir Pessoa
+                    4 - Atualizar Pessoa
+                    5 - Buscar por Nome
+                    6 - Sair""");
+    }
+
+    private static void cadastrarPessoa() {
+        System.out.print("\nEscreva o nome: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("\nEscreva o email: ");
+        String email = scanner.nextLine();
+
+        idPessoa++;
+        Pessoa novaPessoa = new Pessoa(idPessoa, nome, email);
+        listaPessoas.add(novaPessoa);
+        System.out.println("Pessoa cadastrada com sucesso!");
+    }
+
+    private static void listarPessoas() {
+        System.out.println("\nLista de Pessoas:");
+        for (Pessoa pessoa : listaPessoas) {        //For-each: percorre cada Pessoa na lista.
+            System.out.println(pessoa.getId() +
+                    " - " + pessoa.getNome() +
+                    " (" + pessoa.getEmail() + ")");
+        }
+    }
+
+    private static void removerPessoa() {
+        System.out.print("\nInforme o ID: ");
+        int idExcluir = scanner.nextInt();
+
+        Pessoa pessoaExcluida = null;               //Variável para guardar a referência da pessoa a ser excluída
+
+        for (Pessoa pessoa : listaPessoas){          //Percorre a lista para encontrar a pessoa com o ID informado.
+            if (pessoa.getId() == idExcluir){        //Se o id da pessoa corrente for igual ao idExcluir, encontramos o alvo.
+                pessoaExcluida = pessoa;             //Guarda a referência da pessoa encontrada.
+                break;
+            }
+        }
+
+        if (pessoaExcluida != null) {                //Verifica se encontrou alguém com aquele id.
+            listaPessoas.remove(pessoaExcluida);     //Se sim, remove essa instância da lista.
+            System.out.println("Pessoa excluída com sucesso.");
+        } else {
+            System.out.println("ID não encontrado.");
+        }
+    }
+
+    private static void atualizarPessoa() {
+        System.out.println("Informe o ID: ");
+        int idAtualizar = scanner.nextInt();
+        scanner.nextLine();
+
+        Pessoa pessoaUpdate = null;
+
+        for (Pessoa pessoa : listaPessoas) {
+            if (pessoa.getId() == idAtualizar) {
+                pessoaUpdate = pessoa;
+                break;
+            }
+        }
+
+        if (pessoaUpdate != null) {
+            System.out.print("\nNome Atual: "+pessoaUpdate.getNome());
+            System.out.print("Email Atual: "+pessoaUpdate.getEmail());
+
+            System.out.print("\nDigite o novo nome ou aperte (enter) para prosseguir com o mesmo: ");
+            String nomeUpdate = scanner.nextLine();
+            if (!nomeUpdate.isBlank()) {         // Só altera se a pessoa digitou algo
+                pessoaUpdate.setNome(nomeUpdate);
+            }
+
+            System.out.println("\nDigite o novo email ou aperte (enter) para prosseguir com o mesmo: ");
+            String emailUpdate = scanner.nextLine();
+            if (!emailUpdate.isBlank()) {       //// Só altera se a pessoa digitou algo
+                pessoaUpdate.setEmail(emailUpdate);
+            }
+
+            System.out.println("\nCadastro atualizado com sucesso.");
+        } else {
+            System.out.println("\nID não encontrado.");
+        }
+    }
+
+    private static void buscarPessoaPorNome() {
+        System.out.print("\nDigite o nome (ou parte) da pessoa: ");
+        String nomeFiltro = scanner.nextLine();
+        List<Pessoa> pessoasFiltro = new ArrayList<>();
+
+        for (Pessoa pessoa : listaPessoas) {
+            if (pessoa.getNome().toLowerCase().contains(nomeFiltro.toLowerCase())) {
+                pessoasFiltro.add(pessoa);
+            }
+        }
+
+        if (pessoasFiltro.isEmpty()) {
+            System.out.println("\nPessoa não encontrada.");
+        } else {
+            System.out.println("\nPessoa(s) encontrada(s):");
+            for (Pessoa pessoaFiltro : pessoasFiltro) {
+                System.out.println(pessoaFiltro.getId() + " - "
+                        + pessoaFiltro.getNome() + " (" + pessoaFiltro.getEmail() + ")");
             }
         }
     }
